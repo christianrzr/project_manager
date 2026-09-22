@@ -27,6 +27,15 @@
             --text-main: #332720;
             --text-muted: #786a63;
             --border-color: #eadfd9;
+            --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.375rem;
+            --weight-medium: 500;
+            --weight-semibold: 600;
+            --weight-bold: 700;
             --radius-lg: 14px;
             --radius-md: 10px;
             --radius-sm: 6px;
@@ -42,7 +51,11 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: var(--font-ui);
+            font-size: var(--text-base);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
             background-color: var(--bg);
             color: var(--text-main);
             min-height: 100vh;
@@ -86,17 +99,19 @@
 
         .brand-title {
             color: #ffffff;
-            font-size: 1.05rem;
-            font-weight: 700;
-            letter-spacing: -0.2px;
+            font-size: var(--text-base);
+            font-weight: var(--weight-bold);
+            letter-spacing: -0.015em;
+            line-height: 1.2;
         }
 
         .brand-sub {
-            font-size: 0.72rem;
+            font-size: var(--text-xs);
             color: #64748b;
             text-transform: uppercase;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.06em;
+            line-height: 1.35;
         }
 
         .sidebar-nav {
@@ -121,7 +136,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px 14px;
+            padding: 8px 12px;
             color: #94a3b8;
             font-size: 0.92rem;
             font-weight: 500;
@@ -136,16 +151,142 @@
 
         .nav-item.active {
             color: #ffffff;
-            background-color: var(--primary);
+            background-color: rgba(255, 255, 255, 0.14);
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(200, 126, 97, 0.28);
         }
 
-        .nav-item .nav-icon {
-            width: 22px;
-            height: 22px;
+        .nav-icon-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(24, 24, 27, 0.5) 100%);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.2s ease;
+        }
+
+        .nav-icon-badge svg {
+            width: 17px;
+            height: 17px;
+            stroke-width: 2.2;
+            color: #ffffff;
+            opacity: 1 !important;
+        }
+
+        .nav-item:hover .nav-icon-badge,
+        .nav-item.active .nav-icon-badge {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(24, 24, 27, 0.7) 100%);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* Floating Action Button (FAB) */
+        .fab-add-task {
+            position: fixed;
+            bottom: 30px;
+            right: 32px;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c87e61, #9f5f49);
+            color: #ffffff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(200, 126, 97, 0.45);
+            cursor: pointer;
+            z-index: 999;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        }
+
+        .fab-add-task:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 10px 26px rgba(200, 126, 97, 0.6);
+        }
+
+        .fab-add-task:active {
+            transform: scale(0.95);
+        }
+
+        .fab-add-task svg {
+            width: 26px;
+            height: 26px;
+            stroke-width: 2.4;
+        }
+
+        /* Priority Radio Pill Buttons */
+        .priority-radios {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .priority-radio-label {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .priority-radio-label input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .priority-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 4px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: #ffffff;
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: #64748b;
+            transition: all 0.18s ease;
             text-align: center;
-            stroke-width: 1.8;
+        }
+
+        .priority-card svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2.2;
+        }
+
+        .priority-radio-label input:checked + .priority-card.p-low {
+            border-color: #64748b;
+            background: #f1f5f9;
+            color: #1e293b;
+            box-shadow: 0 0 0 2px rgba(100, 116, 139, 0.2);
+        }
+
+        .priority-radio-label input:checked + .priority-card.p-medium {
+            border-color: #6366f1;
+            background: #eef2ff;
+            color: #4338ca;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        }
+
+        .priority-radio-label input:checked + .priority-card.p-high {
+            border-color: #f97316;
+            background: #fff7ed;
+            color: #c2410c;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
+        }
+
+        .priority-radio-label input:checked + .priority-card.p-urgent {
+            border-color: #ef4444;
+            background: #fef2f2;
+            color: #b91c1c;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.28);
         }
 
         .sidebar-user {
@@ -226,9 +367,11 @@
         }
 
         .page-title {
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: var(--text-xl);
+            font-weight: var(--weight-bold);
             color: var(--text-main);
+            letter-spacing: -0.025em;
+            line-height: 1.2;
         }
 
         .topbar-right {
@@ -322,6 +465,12 @@
         .content {
             padding: 28px 32px 40px;
             flex: 1;
+        }
+
+        .view-shell {
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         /* ===== CARDS ===== */
@@ -637,31 +786,35 @@
         <nav class="sidebar-nav">
             <div class="nav-section-title">Views & Dashboards</div>
             <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="nav-icon" data-lucide="layout-dashboard" aria-hidden="true"></i>
+                <div class="nav-icon-badge">
+                    <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                </div>
                 <span class="nav-text">Dashboard</span>
             </a>
             <a href="{{ route('tasks.index') }}" class="nav-item {{ request()->routeIs('tasks.index') ? 'active' : '' }}">
-                <i class="nav-icon" data-lucide="list-todo" aria-hidden="true"></i>
+                <div class="nav-icon-badge">
+                    <i data-lucide="list-todo" aria-hidden="true"></i>
+                </div>
                 <span class="nav-text">All Tasks</span>
             </a>
             <a href="{{ route('tasks.board') }}" class="nav-item {{ request()->routeIs('tasks.board') ? 'active' : '' }}">
-                <i class="nav-icon" data-lucide="columns-3" aria-hidden="true"></i>
+                <div class="nav-icon-badge">
+                    <i data-lucide="columns-3" aria-hidden="true"></i>
+                </div>
                 <span class="nav-text">Task Board</span>
             </a>
             <a href="{{ route('calendar') }}" class="nav-item {{ request()->routeIs('calendar') ? 'active' : '' }}">
-                <i class="nav-icon" data-lucide="calendar-days" aria-hidden="true"></i>
+                <div class="nav-icon-badge">
+                    <i data-lucide="calendar-days" aria-hidden="true"></i>
+                </div>
                 <span class="nav-text">Calendar</span>
-            </a>
-
-            <div class="nav-section-title">Organization</div>
-            <a href="{{ route('categories.index') }}" class="nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}">
-                <i class="nav-icon" data-lucide="tags" aria-hidden="true"></i>
-                <span class="nav-text">Categories</span>
             </a>
 
             <div class="nav-section-title">Account</div>
             <a href="{{ route('settings.account') }}" class="nav-item {{ request()->routeIs('settings.account') ? 'active' : '' }}">
-                <i class="nav-icon" data-lucide="settings-2" aria-hidden="true"></i>
+                <div class="nav-icon-badge">
+                    <i data-lucide="settings-2" aria-hidden="true"></i>
+                </div>
                 <span class="nav-text">Account Settings</span>
             </a>
         </nav>
@@ -691,15 +844,6 @@
             <div class="topbar-left">
                 <h1 class="page-title">@yield('header_title', 'Dashboard')</h1>
             </div>
-
-            @unless(trim($__env->yieldContent('hide_topbar_action')))
-                <div class="topbar-right">
-                    <button type="button" class="btn btn-primary" onclick="openCreateTaskModal()">
-                        <i data-lucide="plus" aria-hidden="true"></i>
-                        Add New Task
-                    </button>
-                </div>
-            @endunless
         </header>
 
         <main class="content">
@@ -735,11 +879,19 @@
         </main>
     </div>
 
+    <!-- Floating Action Button for Adding Tasks -->
+    <button type="button" class="fab-add-task" onclick="openCreateTaskModal()" title="Add New Task" aria-label="Add New Task">
+        <i data-lucide="plus" aria-hidden="true"></i>
+    </button>
+
     <!-- Quick Create Task Modal -->
     <div class="modal-overlay" id="createTaskModal">
         <div class="modal-container">
             <div class="modal-header">
-                <h3>Create New Task</h3>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <img src="{{ asset('images/tala.svg') }}" alt="Logo" style="height: 32px; width: 32px; object-fit: contain;">
+                    <h3 style="font-size: 1.15rem; font-weight: 750; color: #1e293b; margin: 0;">Create New Task</h3>
+                </div>
                 <button type="button" class="btn-icon" onclick="closeCreateTaskModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -752,45 +904,67 @@
 
                     <div class="form-group">
                         <label class="form-label" for="m_description">Description</label>
-                        <textarea name="description" id="m_description" class="form-control" rows="3" placeholder="Add optional details, notes, or links..."></textarea>
+                        <textarea name="description" id="m_description" class="form-control" rows="3" placeholder="Add optional details, notes, or code snippet..."></textarea>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
                         <div class="form-group">
-                            <label class="form-label" for="m_category_id">Category</label>
-                            <select name="category_id" id="m_category_id" class="form-control">
-                                <option value="">No Category</option>
+                            <label class="form-label" for="m_category_name">Category</label>
+                            <input type="text" name="new_category_name" id="m_category_name" class="form-control" list="existingCategoriesList" placeholder="Choose or type a category...">
+                            <datalist id="existingCategoriesList">
                                 @foreach(Auth::user()->categories as $cat)
-                                    <option value="{{ $cat->id }}">{{ $cat->icon }} {{ $cat->name }}</option>
+                                    <option value="{{ $cat->name }}">{{ $cat->name }}</option>
                                 @endforeach
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="m_priority">Priority</label>
-                            <select name="priority" id="m_priority" class="form-control">
-                                <option value="Low">Low</option>
-                                <option value="Medium" selected>Medium</option>
-                                <option value="High">High</option>
-                                <option value="Urgent">Urgent</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                        <div class="form-group">
-                            <label class="form-label" for="m_status">Initial Status</label>
-                            <select name="status" id="m_status" class="form-control">
-                                <option value="Pending" selected>Pending</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Completed">Completed</option>
-                            </select>
+                            </datalist>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label" for="m_due_date">Due Date</label>
                             <input type="date" name="due_date" id="m_due_date" class="form-control">
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Priority Level</label>
+                        <div class="priority-radios">
+                            <label class="priority-radio-label">
+                                <input type="radio" name="priority" value="Low">
+                                <div class="priority-card p-low">
+                                    <i data-lucide="arrow-down" aria-hidden="true"></i>
+                                    <span>Low</span>
+                                </div>
+                            </label>
+                            <label class="priority-radio-label">
+                                <input type="radio" name="priority" value="Medium" checked>
+                                <div class="priority-card p-medium">
+                                    <i data-lucide="minus" aria-hidden="true"></i>
+                                    <span>Medium</span>
+                                </div>
+                            </label>
+                            <label class="priority-radio-label">
+                                <input type="radio" name="priority" value="High">
+                                <div class="priority-card p-high">
+                                    <i data-lucide="arrow-up" aria-hidden="true"></i>
+                                    <span>High</span>
+                                </div>
+                            </label>
+                            <label class="priority-radio-label">
+                                <input type="radio" name="priority" value="Urgent">
+                                <div class="priority-card p-urgent">
+                                    <i data-lucide="alert-circle" aria-hidden="true"></i>
+                                    <span>Urgent</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="m_status">Initial Status</label>
+                        <select name="status" id="m_status" class="form-control">
+                            <option value="Pending" selected>Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -813,6 +987,7 @@
     <script>
         function openCreateTaskModal() {
             document.getElementById('createTaskModal').classList.add('active');
+            window.lucide?.createIcons({ attrs: { 'stroke-width': 2 } });
         }
 
         function closeCreateTaskModal() {

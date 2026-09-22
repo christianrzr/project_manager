@@ -64,6 +64,15 @@
         background: #eff6ff;
     }
 
+    .calendar-cell.has-urgent {
+        background: #fff5f5 !important;
+        border-color: #fca5a5 !important;
+    }
+
+    .calendar-cell.has-urgent .cell-date {
+        color: #b91c1c;
+    }
+
     .cell-date {
         font-size: 0.85rem;
         font-weight: 700;
@@ -97,6 +106,7 @@
 @endsection
 
 @section('content')
+<div class="view-shell">
     <div class="calendar-container">
         <!-- Calendar Controls -->
         <div class="calendar-header">
@@ -150,10 +160,18 @@
                     $thisDate = $currentDate->copy()->day($day);
                     $isToday = $thisDate->isToday();
                     $dayTasks = $tasksByDay->get($day, collect());
+                    $hasUrgent = $dayTasks->contains(function ($t) {
+                        return $t->priority === 'Urgent' && $t->status !== 'Completed';
+                    });
                 @endphp
-                <div class="calendar-cell {{ $isToday ? 'is-today' : '' }}">
+                <div class="calendar-cell {{ $isToday ? 'is-today' : '' }} {{ $hasUrgent ? 'has-urgent' : '' }}">
                     <div class="cell-date {{ $isToday ? 'today-number' : '' }}">
-                        <span>{{ $day }}</span>
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            {{ $day }}
+                            @if($hasUrgent)
+                                <span style="font-size: 0.65rem; background: #ef4444; color: #fff; padding: 1px 5px; border-radius: 4px; font-weight: 800;">URGENT</span>
+                            @endif
+                        </span>
                         @if($isToday)
                             <span style="font-size: 0.7rem; background: #3b82f6; color: #fff; padding: 1px 5px; border-radius: 4px;">Today</span>
                         @endif
@@ -161,15 +179,17 @@
 
                     @foreach($dayTasks as $task)
                         @php
-                            $bg = $task->status === 'Completed' ? '#d1fae5' : ($task->priority === 'Urgent' ? '#fee2e2' : '#e0e7ff');
-                            $color = $task->status === 'Completed' ? '#065f46' : ($task->priority === 'Urgent' ? '#991b1b' : '#3730a3');
+                            $isTaskUrgent = $task->priority === 'Urgent' && $task->status !== 'Completed';
+                            $bg = $task->status === 'Completed' ? '#d1fae5' : ($isTaskUrgent ? '#fee2e2' : '#e0e7ff');
+                            $color = $task->status === 'Completed' ? '#065f46' : ($isTaskUrgent ? '#991b1b' : '#3730a3');
                         @endphp
-                        <a href="{{ route('tasks.show', $task) }}" class="calendar-task-item" style="background: {{ $bg }}; color: {{ $color }};" title="{{ $task->task_name }}">
-                            {{ $task->status === 'Completed' ? '✓' : '•' }} {{ $task->task_name }}
+                        <a href="{{ route('tasks.show', $task) }}" class="calendar-task-item" style="background: {{ $bg }}; color: {{ $color }}; {{ $isTaskUrgent ? 'border: 1px solid #f87171; font-weight: 700;' : '' }}" title="{{ $task->task_name }}">
+                            {{ $task->status === 'Completed' ? '✓' : ($isTaskUrgent ? '⚠' : '•') }} {{ $task->task_name }}
                         </a>
                     @endforeach
                 </div>
             @endfor
         </div>
     </div>
+</div>
 @endsection

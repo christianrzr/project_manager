@@ -40,7 +40,7 @@ class TaskController extends Controller
         $categories = $user->categories()->withCount('tasks')->get();
 
         // Recent tasks
-        $recentTasks = $user->tasks()->with('category')->latest()->take(5)->get();
+        $recentTasks = $user->tasks()->with(['category', 'subtasks'])->latest()->take(5)->get();
 
         return view('tasks.dashboard', compact(
             'totalTasks',
@@ -181,20 +181,37 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'task_name'   => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'nullable|exists:categories,id',
-            'priority'    => 'required|in:Low,Medium,High,Urgent',
-            'status'      => 'required|in:Pending,In Progress,Completed',
-            'due_date'    => 'nullable|date',
-            'subtasks'    => 'nullable|array',
-            'subtasks.*'  => 'nullable|string|max:255',
+            'task_name'         => 'required|string|max:255',
+            'description'       => 'nullable|string',
+            'category_id'       => 'nullable',
+            'new_category_name' => 'nullable|string|max:100',
+            'priority'          => 'required|in:Low,Medium,High,Urgent',
+            'status'            => 'required|in:Pending,In Progress,Completed',
+            'due_date'          => 'nullable|date',
+            'subtasks'          => 'nullable|array',
+            'subtasks.*'        => 'nullable|string|max:255',
         ]);
+
+        $categoryId = $validated['category_id'] ?? null;
+        if (!empty($validated['new_category_name'])) {
+            $catName = trim($validated['new_category_name']);
+            $category = Auth::user()->categories()->firstOrCreate(
+                ['name' => $catName],
+                ['color' => '#c87e61', 'icon' => '📁']
+            );
+            $categoryId = $category->id;
+        } elseif (!empty($categoryId) && !is_numeric($categoryId)) {
+            $category = Auth::user()->categories()->firstOrCreate(
+                ['name' => trim($categoryId)],
+                ['color' => '#c87e61', 'icon' => '📁']
+            );
+            $categoryId = $category->id;
+        }
 
         $task = Auth::user()->tasks()->create([
             'task_name'    => $validated['task_name'],
             'description'  => $validated['description'] ?? null,
-            'category_id'  => $validated['category_id'] ?? null,
+            'category_id'  => $categoryId,
             'priority'     => $validated['priority'],
             'status'       => $validated['status'],
             'due_date'     => $validated['due_date'] ?? null,
@@ -242,13 +259,29 @@ class TaskController extends Controller
         }
 
         $validated = $request->validate([
-            'task_name'   => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'nullable|exists:categories,id',
-            'priority'    => 'required|in:Low,Medium,High,Urgent',
-            'status'      => 'required|in:Pending,In Progress,Completed',
-            'due_date'    => 'nullable|date',
+            'task_name'         => 'required|string|max:255',
+            'description'       => 'nullable|string',
+            'category_id'       => 'nullable',
+            'new_category_name' => 'nullable|string|max:100',
+            'priority'          => 'required|in:Low,Medium,High,Urgent',
+            'status'            => 'required|in:Pending,In Progress,Completed',
+            'due_date'          => 'nullable|date',
         ]);
+
+        $categoryId = $validated['category_id'] ?? $task->category_id;
+        if (!empty($validated['new_category_name'])) {
+            $catName = trim($validated['new_category_name']);
+            $category = Auth::user()->categories()->firstOrCreate(
+                ['name' => $catName],
+                ['color' => '#c87e61', 'icon' => '📁']
+            );
+            $categoryId = $category->id;
+        } elseif (isset($validated['new_category_name']) && trim($validated['new_category_name']) === '') {
+            $categoryId = null;
+        }
+
+        $validated['category_id'] = $categoryId;
+        unset($validated['new_category_name']);
 
         if ($validated['status'] === 'Completed' && $task->status !== 'Completed') {
             $validated['completed_at'] = now();
@@ -258,7 +291,7 @@ class TaskController extends Controller
 
         $task->update($validated);
 
-        return redirect()->route('tasks.index')->with('success', 'Task updated successfully!');
+        return redirect()->route('tasks.show', $task)->with('success', 'Task updated successfully!');
     }
 
     public function destroy(Task $task)
