@@ -1,59 +1,183 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Personal Task Manager
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Project Code:** WST21-PM-2026-SF  
+**Student Name:** Christian Romano  
+**Course & Year:** BSIT - 2nd Year (Section 11)  
+**Database Used:** Supabase (PostgreSQL) / MySQL
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Core Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Add Task:** Create new tasks with title, description, dynamic category, priority level (Low, Medium, High, Urgent), due date, and dynamic subtasks checklist.
+- **View Tasks:** Multiple task viewing options including:
+    - **All Tasks List:** Searchable and filterable task list with progress indicators.
+    - **Task Details View (`tasks/{id}`):** Dedicated workspace view with interactive subtask checklist, status switcher, codeblock notes, and timing metadata.
+    - **Task Board (Kanban):** 3-column workflow board (Pending, In Progress, Completed).
+    - **Interactive Calendar:** Monthly calendar displaying deadlines with color-coded priority pills.
+    - **Overview Dashboard:** 6 real-time stat cards, focus workload metrics, and category distributions.
+- **Edit Task:** Modify task titles, descriptions, categories, due dates, and priorities with pre-filled forms.
+- **Delete Task:** One-click task removal with confirmation prompts.
+- **Update Status:** Instant status toggles (Pending, In Progress, Completed) directly from dashboard, lists, board, or detail views.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Additional Enhanced Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+1. **Passwordless Authentication & Google OAuth:**
+    - Sign in or register via temporary 6-digit email OTP codes (zero passwords needed).
+    - Instant 1-click test login via Google OAuth integration.
+2. **Subtasks Management:**
+    - Break tasks into actionable steps with real-time percentage progress bars (0% - 100%).
+3. **Categories & Organization:**
+    - Organize tasks by custom color-coded categories with clean icon badges.
+    - Dynamic inline category creation directly within task forms.
+4. **Search & Multi-Filter:**
+    - Real-time search across task titles and descriptions.
+    - Multi-filtering by Status, Priority, Category, and Timeframe (Due Today, Overdue, Upcoming).
+5. **Cloud Database (Supabase PostgreSQL):**
+    - High-performance, cloud-hosted PostgreSQL database powered by Supabase with connection pooling.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Database Architecture (ERD)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```mermaid
+erDiagram
+    USERS ||--o{ CATEGORIES : owns
+    USERS ||--o{ TASKS : owns
+    USERS ||--o{ ACCOUNT_CHANGES : requests
+    USERS ||--o{ EMAIL_OTPS : requests
+    CATEGORIES ||--o{ TASKS : categorizes
+    TASKS ||--o{ SUBTASKS : contains
 
-### Premium Partners
+    USERS {
+        bigint id PK
+        string name
+        string username
+        string email
+        string password
+        string google_id
+        timestamp email_verified_at
+    }
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+    CATEGORIES {
+        bigint id PK
+        bigint user_id FK
+        string name
+        string color
+        string icon
+        text description
+    }
 
-## Contributing
+    TASKS {
+        bigint id PK
+        bigint user_id FK
+        string category_id FK
+        string task_name
+        text description
+        string status
+        string priority
+        date due_date
+        timestamp completed_at
+    }
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    SUBTASKS {
+        bigint id PK
+        bigint task_id FK
+        string title
+        boolean is_completed
+    }
 
-## Code of Conduct
+    EMAIL_OTPS {
+        bigint id PK
+        string email
+        string code
+        timestamp expires_at
+    }
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Demo Login Credentials
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The Supabase database comes pre-seeded with sample data:
+
+| Field              | Demo Account                                               |
+| ------------------ | ---------------------------------------------------------- |
+| **Email**          | `christian.romano@example.com`                             |
+| **Username**       | `christian_romano`                                         |
+| **Password**       | `password123`                                              |
+| **Google Sign-In** | Click **"Continue with Google"** for instant 1-click login |
+
+---
+
+## Installation & Setup Guide
+
+### 1. Clone & Install Dependencies
+
+```bash
+git clone <repository-url>
+cd mytaskmanager
+composer install
+```
+
+### 2. Environment Configuration
+
+Copy `.env.example` to `.env` and configure your database settings:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=aws-0-ap-northeast-1.pooler.supabase.com
+DB_PORT=6543
+DB_DATABASE=postgres
+DB_USERNAME=postgres.bcjyckscprlvhjskzjdl
+DB_PASSWORD=your_supabase_password
+DB_SSLMODE=require
+```
+
+### 3. Generate Application Key & Run Migrations
+
+```bash
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+```
+
+### 4. Start Development Server
+
+```bash
+php artisan serve
+```
+
+Open your browser and visit: `http://127.0.0.1:8000`
+
+---
+
+## Route Map
+
+| Method   | URI                    | Controller Action                | Description                           |
+| -------- | ---------------------- | -------------------------------- | ------------------------------------- |
+| `GET`    | `/login`               | `AuthController@showLogin`       | Passwordless / OAuth login view       |
+| `POST`   | `/login/send`          | `AuthController@sendOtp`         | Send 6-digit magic code to email      |
+| `GET`    | `/verify`              | `AuthController@showVerify`      | Verification input view               |
+| `POST`   | `/verify`              | `AuthController@verifyOtp`       | Authenticate code & log in            |
+| `GET`    | `/dashboard`           | `TaskController@dashboard`       | 6-metric stats dashboard              |
+| `GET`    | `/tasks`               | `TaskController@index`           | Searchable & filterable task list     |
+| `GET`    | `/tasks/create`        | `TaskController@create`          | Create new task form                  |
+| `POST`   | `/tasks`               | `TaskController@store`           | Store task in database                |
+| `GET`    | `/tasks/{task}`        | `TaskController@show`            | Detailed task workspace & subtasks    |
+| `GET`    | `/tasks/{task}/edit`   | `TaskController@edit`            | Edit task form                        |
+| `PUT`    | `/tasks/{task}`        | `TaskController@update`          | Update existing task                  |
+| `DELETE` | `/tasks/{task}`        | `TaskController@destroy`         | Delete task                           |
+| `PATCH`  | `/tasks/{task}/status` | `TaskController@updateStatus`    | Toggle task status                    |
+| `GET`    | `/board`               | `TaskController@board`           | Kanban workflow column board          |
+| `GET`    | `/calendar`            | `TaskController@calendar`        | Monthly interactive deadline calendar |
+| `GET`    | `/categories`          | `CategoryController@index`       | Manage categories                     |
+| `GET`    | `/settings/account`    | `AccountSettingsController@show` | Account profile & settings            |
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project was developed for the **WST21 - Web Systems and Technologies** course curriculum.
